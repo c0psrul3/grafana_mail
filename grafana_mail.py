@@ -207,6 +207,10 @@ if __name__ == '__main__':
         if d[1] is None or not args.panel_list:
             dash_json = requests.get(f"{args.grafana_server}/api/dashboards/uid/{d[0]}",
                                      headers={"Authorization": "Bearer " + args.api_token}).json()
+            dashTitle = dash_json['dashboard']['title']
+            dashDesc  = dash_json['dashboard']['description']
+            dashUid   = dash_json['dashboard']['uid']
+
             # Set the dash slug in our tuple
             d = (d[0], dash_json['meta']['slug'])
 
@@ -225,17 +229,14 @@ if __name__ == '__main__':
 
     msgRoot = prepare()
 
-    msgStr = """
-<h3>Grafana Report</h3>
+    msgHead = f'<h2><a href="{args.grafana_server}/d/{dashUid}/">{dashTitle}</a></h2>'
+    #msgHead = f'<h2>{dashTitle}</h2>'
+    msgStr  = f'<h4>{dashDesc}</h4>'
+    #msgStr += f'<p><a href="{args.grafana_server}/d/{dashUid}">{args.grafana_server}/d/{dashUid}</a></p>'
 
-This is the daily snapshot of the latest Grafana graphs.
-
-Best Regards,
-Grafana Team
-"""
     msgAlternative = MIMEMultipart('alternative')
     msgRoot.attach(msgAlternative)
-    msgText = MIMEText(msgStr)
+    msgText = MIMEText("\n".join([msgHead,msgStr]))
     msgAlternative.attach(msgText)
 
     # Each panelId is a 3-tuple of (DashID, DashName, PanelID)
