@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # coding: utf8
 
 """
@@ -211,8 +211,9 @@ if __name__ == '__main__':
             d = (d[0], dash_json['meta']['slug'])
 
             # Also, if there's no panel_list, then make one of all panel IDs in `dash_json`
+            # NOTE: Panels of type "row" are excluded, since rendered panel images cannot be retrieved.
             if not args.panel_list:
-                args.panel_list = [str(p['id']) for p in dash_json['dashboard']['panels']]
+                args.panel_list = [str(p['id']) for p in dash_json['dashboard']['panels'] if str(p['type']) != "row"]
                 print(f"Getting all panels from dashboard {d}: {args.panel_list}")
 
         args.panel_list = [(d[0], d[1], p) for p in args.panel_list]
